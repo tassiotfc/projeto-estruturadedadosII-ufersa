@@ -34,6 +34,7 @@ Sistema de Gestão Comercial
 
 Uma descrição do projeto pode ser vista no [documento de especificação](Projeto_2016_2_LAED_II.pdf).
 <br>
+<br>
 Estrutura de dados utilizadas:
 - Árvore AVL
 - Estrutura genérica
