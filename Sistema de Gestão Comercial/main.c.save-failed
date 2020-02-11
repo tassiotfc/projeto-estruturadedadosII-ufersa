@@ -1,0 +1,323 @@
+/******************************************************************************************
+PROGRAMA PARA MANIPULAÇÃO DE UMA ÁRVORE BALANCEADA
+OPERAÇÕES:
+    - INSERIR NÓ NA ÁRVORE
+    - CONSULTAR NÓ DA ÁRVORE
+    - IMPRIMIR ÁRVORE COM NOTAÇÃO ESPECIAL, EM ORDEM,PRÉ-ORDEM OU PÓS-ORDEM
+    - EXCLUIR NÓ DA ÁRVORE
+    - ESVAZIAR ÁRVORE
+*******************************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include "ArvAvlGen.h"
+#include "cliente.h"
+#include "funcionario.h"
+#include "interacao.h"
+#include "leitura.h"
+
+#define TITULO_ITEM1 "Logar como administrador"
+#define TITULO_ITEM2 "Logar como funcionário"
+#define TITULO_ITEM3 "Sair do programa"
+
+#define N_ITENS 3
+#define ITEM1 '1'
+#define ITEM2 '2'
+#define ITEM3 '3'
+
+#define TITULO_OPCAO1 "Cadastrar funcionário"
+#define TITULO_OPCAO2 "Atualizar dados do funcionário"
+#define TITULO_OPCAO3 "Imprimir dados do funcionario"
+#define TITULO_OPCAO4 "Excluir cadastro do funcionário"
+#define TITULO_OPCAO5 "Voltar ao menu principal"
+#define TITULO_OPCAO6 "Sair e salvar dados"
+
+
+#define N_OPCOES 6
+#define OPCAO1 '1'
+#define OPCAO2 '2'
+#define OPCAO3 '3'
+#define OPCAO4 '4'
+#define OPCAO5 '5'
+#define OPCAO6 '6'
+
+
+#define TITULO_OPTION1 "Cadastrar cliente"
+#define TITULO_OPTION2 "Cadastrar compra"
+#define TITULO_OPTION3 "Realizar pagamento"
+#define TITULO_OPTION4 "Excluir cadastro do cliente"
+#define TITULO_OPTION5 "Imprimir dados do cliente"
+#define TITULO_OPTION6 "Voltar ao menu principal"
+#define TITULO_OPTION7 "Sair e salvar dados"
+
+#define N_OPTIONS 7
+#define OPTION1 '1'
+#define OPTION2 '2'
+#define OPTION3 '3'
+#define OPTION4 '4'
+#define OPTION5 '5'
+#define OPTION6 '6'
+#define OPTION7 '7'
+
+#define SENHA_ADM  54321
+#define SENHA_FUNC 12345
+
+int main()
+{
+    unsigned char op;
+	unsigned int saida=0, saida1 = 0, saida2 = 0;
+	char *nome,*cpf, *cargo;
+	float deb, cred, sal;
+
+	ArvAVL *FUNCIONARIO = NULL;
+    int senhaA;
+    FILE *funcionario;
+
+	ArvAVL *CLIENTE = NULL;
+	int senhaF;
+	FILE *cliente;
+
+	int achou;
+
+	funcionario = fopen("funcionario.txt","rt");
+    if(funcionario == NULL){
+        printf("Erro ao abrir arquivo!\n");
+        exit(1);
+    }
+    FUNCIONARIO = funcionario_carrega(FUNCIONARIO, funcionario);
+
+    cliente = fopen("cliente.txt","rt");
+    if(cliente == NULL){
+        printf("Erro ao abrir arquivo!\n");
+        exit(1);
+    }
+    CLIENTE = cliente_carrega(CLIENTE, cliente);
+
+	do{
+		apresenta_programa("Cadastro de Clientes e Funcionários - [Versao 1.0]. Copyright (c) 2017");
+        apresenta_programa("Desenvolvido por: Tassio F.C. Todos os direitos reservados.");
+		printf("\n[MENU PRINCIPAL]\n");
+		apresenta_menu(N_ITENS, ITEM1,TITULO_ITEM1,TITULO_ITEM2,TITULO_ITEM3);
+		op=le_opcao(ITEM1, ITEM1+N_ITENS-1);
+		switch(op){
+            case ITEM1:
+                printf("DIGITE A SENHA DE ADMINISTRADOR:");
+                senhaA = le_senha(SENHA_ADM);
+                limpa_tela();
+                do{
+                    printf("MENU ADMINISTRADOR:\n\n");
+                    apresenta_menu(N_OPCOES, OPCAO1,
+                                   TITULO_OPCAO1,TITULO_OPCAO2,
+                                   TITULO_OPCAO3,TITULO_OPCAO4,
+                                   TITULO_OPCAO5,TITULO_OPCAO6);
+                    op=le_opcao(OPCAO1, OPCAO1+N_OPCOES-1);
+                    limpa_tela();
+                    switch(op){
+                        case OPCAO1:
+                            limpa_buffer();
+                            printf("INFORME OS DADOS DO FUNCIONÁRIO:\n\n");
+                            nome = le_nome("NOME");
+                            limpa_buffer();
+                            cpf = le_cpf();
+                            limpa_buffer();
+                            cargo = le_nome("CARGO");
+                            sal = le_valor("SALARIO");
+                            FUNCIONARIO = funcionario_inserir(FUNCIONARIO, nome, cpf, cargo, sal);
+                            printf("\nINSERÇÃO REALIZADA COM SUCESSO!");
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_tela();
+                            break;
+                        case OPCAO2:
+                            limpa_buffer();
+                            achou = 0;
+                            printf("INFORME O NOME DO FUNCIONÁRIO QUE DESEJA ATUALIZAR:\n\n");
+                            nome = le_nome("NOME");
+                            if(!funcionario_consultar(FUNCIONARIO, nome, achou)){
+                                printf("Nome não encontrado no banco de dados!");
+                            }else{
+                                printf("\nFORNEÇA OS NOVOS DADOS DO FUNCIONÁRIO:\n");
+                                sal = le_valor("SALÁRIO");
+                                cargo = le_nome("CARGO");
+                                FUNCIONARIO = funcionario_atualiza(FUNCIONARIO, nome, cargo, &sal);
+                                printf("\nDADOS ATUALIZADOS COM SUCESSO!");
+                            }
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_buffer();
+                            limpa_tela();
+                            break;
+                        case OPCAO3:
+                            limpa_buffer();
+                            if(funcionario_vazia(FUNCIONARIO)){
+                                printf("\nNENHUM FUNCIONÁRIO ENCONTRADO!");
+                            }else{
+                                printf("[DADOS DOS FUNCIONÁRIOS]\n");
+                                funcionario_imprime(FUNCIONARIO);
+                            }
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_buffer();
+                            limpa_tela();
+                            break;
+                        case OPCAO4:
+                            limpa_buffer();
+                            achou = 0;
+                            printf("INFORME O NOME DO FUNCIONÁRIO QUE DESEJA EXCLUIR:\n\n");
+                            nome = le_nome("NOME");
+                            if(!funcionario_consultar(FUNCIONARIO, nome, achou)){
+                                printf("\nFUNCIONÁRIO NÃO CADASTRADO!");
+                            }else{
+                                FUNCIONARIO = funcionario_remover(FUNCIONARIO, nome);
+                                printf("\nFUNCIONÁRIO EXCLUIDO!");
+                            }
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_buffer();
+                            limpa_tela();
+                            break;
+                        case OPCAO5:
+                            saida1 = 1;
+                            break;
+                        case OPCAO6:
+                            saida = 1;
+                            saida1 = 1;
+                            mensagem_despedida("ENCERRANDO PROGRAMA. ATE BREVE...");
+                            break;
+                        default:
+                            printf("ESTE PROGRAMA TEM UM BUG");
+                            return 1;
+                    }
+                }while(!saida1);
+                saida1 = 0;
+                funcionario = fopen("funcionario.txt","wt");
+                if(funcionario == NULL){
+                    printf("Erro ao abrir arquivo!\n");
+                    exit(1);
+                }
+                funcionario_salva(funcionario,FUNCIONARIO);
+                fclose(funcionario);
+                limpa_buffer();
+                break;
+            case ITEM2:
+                printf("DIGITE A SENHA DE FUNCIONÁRIO:");
+                senhaF = le_senha(SENHA_FUNC);
+                limpa_tela();
+                do{
+                    printf("MENU FUNCIONÁRIO:\n");
+                    apresenta_menu(N_OPTIONS, OPTION1,
+                                   TITULO_OPTION1,TITULO_OPTION2,
+                                   TITULO_OPTION3,TITULO_OPTION4,
+                                   TITULO_OPTION5,TITULO_OPTION6,
+                                   TITULO_OPTION7);
+                    op=le_opcao(OPTION1, OPTION1+N_OPTIONS-1);
+                    limpa_tela();
+                    switch(op){
+                        case OPTION1:
+                            limpa_buffer();
+                            printf("INFORME OS DADOS DO CLIENTE:\n");
+                            nome = le_nome("NOME");
+                            limpa_buffer();
+                            cpf = le_cpf();
+                            limpa_buffer();
+                            cred = le_valor("CRÉDITO");
+                            CLIENTE = cliente_inserir(CLIENTE, nome, cpf, cred);
+                            printf("\nINSERÇÃO REALIZADA COM SUCESSO!");
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_tela();
+                            break;
+                        case OPTION2:
+                            limpa_buffer();
+                            achou = 0;
+                            nome = le_nome("INFORME O NOME DO CLIENTE CUJO CRÉDITO DEVE SER ATUALIZADO");
+                            if(!cliente_consultar(CLIENTE, nome, achou)){
+                                printf("NOME NÃO ENCONTRADO NO BANCO DE DADOS!");
+                            }else{
+                                cred = le_valor("INFORME O VALOR DO CRÉDITO");
+                                CLIENTE = cliente_atualizaCredito(CLIENTE, nome, &cred);
+                                printf("VENDA CADASTRADA COM SUCESSO!");
+                            }
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_buffer();
+                            limpa_tela();
+                            break;
+                        case OPTION3:
+                            limpa_buffer();
+                            achou = 0;
+                            nome = le_nome("INFORME O NOME DO CLIENTE PARA PROCEDERMOS COM O PAGAMENTO");
+                            if(!cliente_consultar(CLIENTE, nome, achou)){
+                                printf("NOME NÃO ENCONTRADO NO BANCO DE DADOS!");
+                            }else{
+                                deb = le_valor("INFORME O VALOR DO DÉBITO");
+                                CLIENTE = cliente_atualizaDebito(CLIENTE, nome, &deb);
+                                printf("CRÉDITO ATUALIZADO COM SUCESSO!");
+                            }
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_buffer();
+                            limpa_tela();
+                            break;
+                        case OPTION4:
+                            limpa_buffer();
+                            achou = 0;
+                            nome = le_nome("FORNEÇA O NOME DO CLIENTE CUJOS DADOS DESEJA EXCLUIR:");
+                            if(!cliente_consultar(CLIENTE, nome, achou)){
+                                printf("FUNCIONÁRIO NÃO CADASTRADO!");
+                            }else{
+                                CLIENTE = cliente_remover(CLIENTE, nome);
+                                printf("FUNCIONÁRIO EXCLUIDO!");
+                            }
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_buffer();
+                            limpa_tela();
+                            break;
+                        case OPTION5:
+                            limpa_buffer();
+                            if(cliente_vazia(CLIENTE)){
+                                printf("NENHUM CLIENTE ENCONTRADO!");
+                            }else{
+                                printf("[DADOS DOS CLIENTES]\n");
+                                cliente_imprime(CLIENTE);
+                            }
+                            printf("\nVOLTAR AO MENU - DIGITE QUALQUER TECLA\n");
+                            getch();
+                            limpa_tela();
+                            break;
+                        case OPTION6:
+                            saida2 = 1;
+                            break;
+                        case OPTION7:
+                            saida2 = 1;
+                            saida = 1;
+                            mensagem_despedida("ENCERRANDO O PROGRAMA. ATE BREVE...");
+                            break;
+                        default:
+                            printf("ESTE PROGRAMA POSSUI UM BUG");
+                            return 1;
+                    }
+                }while(!saida2);
+                saida2 = 0;
+                cliente = fopen("cliente.txt","wt");
+                if(cliente == NULL){
+                    printf("ERRO AO ABRIR ARQUIVO!\n");
+                    exit(1);
+                }
+                cliente_salva(cliente,CLIENTE);
+                fclose(cliente);
+                limpa_buffer();
+                break;
+            case ITEM3:
+                saida = 1;
+				mensagem_despedida("ENCERRANDO O PROGRAMA. ATÉ BREVE...");
+				break;
+			default:
+				printf("ESTE PROGRAMA POSSUI UM BUG");
+				return 1;
+		}
+	}while(!saida);
+    return 0;
+}

@@ -1,0 +1,14 @@
+#ifndef CLIENTE_H_INCLUDED
+#define CLIENTE_H_INCLUDED
+
+typedef struct cliente Cliente;
+
+int cliente_inserir(void* info, void* cliente);
+int cliente_consultar(void* dado, void* info);
+void cliente_imprimeNE(void* info);
+void cliente_imprime(void* info);
+ArvAVL* cliente_carrega(ArvAVL* aux, FILE* fp);
+void* cliente_carrega(void* linha);
+Cliente* cliente_cria(char* nome, char* endereco, char* cpf, float credito, float debito);
+
+#endif // CLIENTE_H_INCLUDED

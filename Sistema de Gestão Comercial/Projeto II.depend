@@ -1,0 +1,63 @@
+# depslib dependency file v1.0
+1495719471 source:c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\arvavlgen.c
+	<stdio.h>
+	<stdlib.h>
+	"ArvAvlGen.h"
+
+1495740159 c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\arvavlgen.h
+
+1495719783 source:c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\cliente.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"cliente.h"
+	"ArvAvlGen.h"
+	"leitura.h"
+
+1495719751 c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\cliente.h
+	"ArvAvlGen.h"
+	"leitura.h"
+
+1495719751 source:c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\funcionario.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"funcionario.h"
+	"ArvAvlGen.h"
+	"leitura.h"
+
+1495719751 c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\funcionario.h
+	"ArvAvlGen.h"
+	"leitura.h"
+
+1495720356 source:c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\interacao.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<stdarg.h>
+	"interacao.h"
+
+1495152679 c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\interacao.h
+
+1495720096 source:c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\leitura.c
+	<stdio.h>
+	<string.h>
+	<ctype.h>
+	"leitura.h"
+	"interacao.h"
+
+1495720152 c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\leitura.h
+	"interacao.h"
+
+1495738420 source:c:\users\ctf\google drive\bti\ensino\3° semestre\lab. de alg. e estrutura de dados ii - thiago rique\3° unidade\projeto ii\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<conio.h>
+	"ArvAvlGen.h"
+	"cliente.h"
+	"funcionario.h"
+	"interacao.h"
+	"leitura.h"
+

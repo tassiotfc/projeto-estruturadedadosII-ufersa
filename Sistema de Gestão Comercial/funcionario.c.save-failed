@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcionario.h"
+#include "ArvAvlGen.h"
+
+struct funcionario{
+    char nome[81], cpf[CARACTERES_CPF+1],cargo[21];
+    float salario;
+};
+
+static int consultar(void* dado, void* info){
+    char* nome = (char*) dado;
+    Funcionario* f = (Funcionario*) info;
+    return strcmp(nome, f->nome);
+}
+
+int funcionario_consultar(ArvAVL* a, void* dado, int achou){
+    return avl_consultar(a,dado,achou,consultar);
+}
+
+static void atualiza(void* dado, void* dado1, void* info){
+    float* sal = (float*) dado;
+    char* cargo = (char*) dado1;
+    Funcionario* f = (Funcionario*) info;
+    f->salario = *sal;
+    strcpy(f->cargo,cargo);
+}
+
+ArvAVL* funcionario_atualiza(ArvAVL* a, void* nome, void* cargo, void* sal){
+    return avl_edita(a,nome,sal,cargo,atualiza,consultar);
+}
+
+static void imprime(void* info, void* extra){
+    Funcionario* f = (Funcionario*) info;
+    printf("\nNOME: %s\n", f->nome);
+    printf("CPF: %s\n", f->cpf);
+    printf("CARGO: %s\n", f->cargo);
+    printf("SALARIO: %.2f\n", f->salario);
+}
+
+void funcionario_imprime(ArvAVL* a){
+    avl_percorreEmOrdem(a,NULL,imprime);
+}
+
+static int inserir(void* dado, void* funcionario){
+    Funcionario* f1 = (Funcionario*) dado;
+    Funcionario* f2 = (Funcionario*) funcionario;
+    return strcmp(f1->nome, f2->nome);
+}
+
+ArvAVL* funcionario_carrega(ArvAVL* aux, FILE* fp){
+    char linha[150];
+    while(fgets(linha,150,fp) != NULL){
+        char nome[81], cpf[CARACTERES_CPF+1], cargo[21];
+        float salario;
+        sscanf(linha,"%80[^\t]\t%11[^\t]\t%20[^\t]\t%.2f",nome, cpf, cargo, &salario);
+        aux =  funcionario_inserir(aux,nome,cpf,cargo,salario);
+    }
+    return aux;
+}
+
+static Funcionario* cria(char* nome, char* cpf, char* cargo, float salario){
+    Funcionario* f = (Funcionario*) malloc(sizeof(Funcionario));
+    strcpy(f->nome, nome);
+    strcpy(f->cpf, cpf);
+    strcpy(f->cargo, cargo);
+    f->salario = salario;
+    return f;
+}
+
+ArvAVL* funcionario_inserir(ArvAVL* a, char* nome, char* cpf, char* cargo, float salario){
+    a =  avl_inserir(a, cria(nome,cpf,cargo,salario), inserir);
+    return a;
+}
+
+static void salva(void* info, void* fp){
+    Funcionario* f = (Funcionario*) info;
+    FILE* arq = (FILE*) fp;
+    fprintf(arq,"%s\t%s\t%s\t%.2f\n",f->nome,f->cpf,f->cargo,f->salario);
+}
+
+void funcionario_salva(FILE* fp, ArvAVL* a){
+    avl_percorreEmOrdem(a,fp,salva);
+}
+
+ArvAVL* funcionario_remover(ArvAVL* f, char* nome){
+    f =  avl_remover(f,nome,consultar,free);
+    return avl_atualiza(f);
+}
+
+int funcionario_vazia(ArvAVL* f){
+    return (f == NULL);
+}

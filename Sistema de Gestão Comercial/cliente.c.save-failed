@@ -1,0 +1,170 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "cliente.h"
+#include "ArvAvlGen.h"
+
+struct cliente{
+    char nome[81], cpf[CARACTERES_EM_CPF+1];
+    float credito;
+};
+
+int consultar(void* dado, void* info){
+    char* nome = (char*) dado;
+    Cliente* c = (Cliente*) info;
+    return strcmp(nome, c->nome);
+}
+
+///CONSULTAR CLIENTE NA ÁRVORE
+int cliente_consultar(ArvAVL* c, void* dado, int achou){
+    return avl_consultar(c,dado,achou,consultar);
+}
+
+static void atualiza_credito(void* dado, void* info){
+    float* cred = (float*) dado;
+    Cliente* c = (Cliente*) info;
+    c->credito = *cred;
+}
+
+///ATUALIZAR CREDITO E DEBITO DE UM CLIENTE
+ArvAVL* cliente_atualizaCredito(ArvAVL* c, void* nome, void* cred){
+    return avl_edita(c,nome,cred,atualiza_credito,consultar);
+}
+
+static void atualiza_debito(void* dado, void* info){
+    float* deb = (float*) dado;
+    Cliente* c = (Cliente*) info;
+    c->credito = (*cred) - (*deb);
+}
+
+///ATUALIZAR CREDITO E DEBITO DE UM CLIENTE
+ArvAVL* cliente_atualiza(ArvAVL* c, void* nome, void* deb){
+    return avl_edita(c,nome,deb,atualiza_debito,consultar);
+}
+
+static void imprime(void* info, void* extra){
+    Cliente* c = (Cliente*) info;
+    printf("\nNOME: %s\n", c->nome);
+    printf("CPF: %s\n", c->cpf);
+    printf("CRÉDITO: %.2f\n", c->credito);
+}
+
+///IMPRIMIR OS DADOS DOS CLIENTES
+void cliente_imprime(ArvAVL* c){
+    avl_percorreEmOrdem(c,NULL,imprime);
+}
+
+static Cliente* cria(char* nome, char* cpf, float cred){
+    Cliente* c = (Cliente*) malloc(sizeof(Cliente));
+    strcpy(c->nome, nome);
+    strcpy(c->cpf, cpf);
+    c->credito = cred;
+    return c;
+}
+
+static int inserir(void* dado, void* cliente){
+    Cliente* c1 = (Cliente*) dado;
+    Cliente* c2 = (Cliente*) cliente;
+    return strcmp(c1->nome, c2->nome);
+}
+
+///INSERIR UM CLIENTE NA ÁRVORE
+ArvAVL* cliente_inserir(ArvAVL* c, char* nome, char* cpf, float cred){
+    c =  avl_inserir(c, cria(nome,cpf,cred), inserir);
+    return c;
+}
+
+///CARREGAR TODOS OS CLIENTES DO ARQUIVO NA ÁRVORE
+ArvAVL* cliente_carrega(ArvAVL* c, FILE* fp){
+    char linha[150];
+    while(fgets(linha,150,fp) != NULL){
+        char nome[81], cpf[CARACTERES_EM_CPF+1];
+        float cred;
+        sscanf(linha,"%80[^\t]\t%11[^\t]\t%f",nome, cpf, &cred);
+        c =  cliente_inserir(c,nome,cpf,cred,deb);
+    }
+    return c;
+}
+
+static void salva(void* info, void* fp){
+    Cliente* f = (Cliente*) info;
+    FILE* arq = (FILE*) fp;
+    fprintf(arq,"%s\t%s\t%.2f\t%.2f\n",f->nome,f->cpf,f->credito,f->debito);
+}
+
+///SALVAR DADOS DE TODOS OS FUNCIONARIOS NO ARQUIVO
+void cliente_salva(FILE* fp, ArvAVL* c){
+    avl_percorreEmOrdem(c,fp,salva);
+}
+
+///REMOVER CLIENTE DA ÁRVORE
+ArvAVL* cliente_remover(ArvAVL* c, char* nome){
+    c =  avl_remover(c,nome,consultar,free);
+    return avl_atualiza(c);
+}
+
+///VERIFICAR SE ÁRVORE CLIENTE VAZIA
+int cliente_vazia(ArvAVL* c){
+    return (c == NULL);
+}
+
+/*
+int cliente_inserir(void* info, void* cliente){
+    Cliente* c1 = (Cliente*) info;
+    Cliente* c2 = (Cliente*) cliente;
+    return strcmp(c1->nome, c2->nome);
+}
+
+void cliente_imprimeNE(void* info){
+    Cliente* c = (Cliente*) info;
+    printf(" %s ", c->nome);
+}
+
+void cliente_imprime(void* info, void* extra){
+    Cliente* c = (Cliente*) info;
+    printf("\n%s ", c->nome);
+    printf("\n%s ", c->cpf);
+    printf("\n%f ", c->credito);
+    printf("\n%f ", c->debito);
+}
+
+ArvAVL* cliente_carrega(ArvAVL* aux, FILE* fp){
+    char linha[150];
+    while(fgets(linha,150,fp) != NULL){
+        char nome[81], cpf[12], endereco[101];
+        float credito, debito;
+        sscanf(fp,"%80[^\t]\t%12\t%f\t%f",nome, cpf, &credito, &debito);
+        Cliente* c = cliente_cria(nome, cpf, credito, debito);
+        aux =  avl_inserir(aux, c, cliente_inserir);
+    }
+    return aux;
+}
+
+void* cliente_carrega(void* linha){
+    char* l = (char*) linha;
+    char nome[81], cpf[12], endereco[101];
+    float credito, debito;
+    sscanf(l,"%80[^\t]\t%100[^\t]\t%12\t%f\t%f",nome, endereco, cpf, credito, debito);
+    Cliente* c = aluno_cria(nome, endereco, cpf, credito, debito);
+    return c;
+}
+
+Cliente* cliente_cria(char* nome, char* cpf, float credito, float debito){
+    Cliente* c = (Cliente*) malloc(sizeof(Cliente));
+    strcpy(c->nome, nome);
+    strcpy(c->cpf, cpf);
+    c->credito = credito;
+    c->debito = debito;
+    return c;
+}
+
+void cliente_save(void* info, void* fp){
+    Cliente* c = (Cliente*) info;
+    FILE* arq = (FILE*) fp;
+    fprintf(arq, "%80[^\t]\t%12\t%f\t%f",c->nome,c->cpf, c->credito,c->debito);
+}
+
+void cliente_salva(FILE* fp, ArvAVL* c){
+    avl_percorreEmOrdem(c,fp,cliente_save);
+}
+*/
